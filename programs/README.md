@@ -1,3 +1,6 @@
+# Version Control Note, include "--no-verify"
+git commit -m "commit msg" --no-verify
+
 # Step 0
 1. Navigate to /workspaces/intro-to-gem5-AdamBaumgartner42/programs
 
