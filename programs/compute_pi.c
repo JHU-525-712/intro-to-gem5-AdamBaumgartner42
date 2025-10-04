@@ -1,13 +1,14 @@
 #include <stdio.h>
 
 int main() {
-    long long int n, i;
+    long long int n = 1000000;
+    long long int i;
+
     double pi = 0.0;
     int sign = 1;
 
     // Number of iterations
     printf("Enter the number of iterations: ");
-    scanf("%lld", &n);
 
     for (i = 0; i < n; i++) {
         pi += sign * 4.0 / (2 * i + 1);
