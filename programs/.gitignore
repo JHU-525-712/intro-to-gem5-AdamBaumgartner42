@@ -1,3 +1,9 @@
+pi_riscv
 pi_arm64
 pi_x86
-pi_riscv
+primes_arm64
+primes_x86
+dhrystone_arm64
+dhrystone_x86
+whetstone_arm64
+whetstone_x86
