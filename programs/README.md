@@ -25,6 +25,10 @@ gcc -O2 -static -o pi_x86 compute_pi.c
 2. Run gem5 simulation, time: < 10 seconds
 gem5 l1_l2_l3_cache_x86.py pi_x86
 
+Tomosulo Simulation x86
+intro-to-gem5-AdamBaumgartner42/programs# gem5 tomasulo_working_stats.py pi_x86
+
+
 ## --- Reference ---
 
 ## Simulating RISCV
