@@ -55,3 +55,4 @@ docker run --volume $(pwd):$(pwd) -w $(pwd) ghcr.io/gem5/gcn-gpu:v24-0 \
 --- What happens here? ---
 Run the simulation with with the program MatrixTranspose.
 Results added to ~/m5out/stats.txt
+** Note, there are 2 sets of stats added. The first one is valid, the second is not
