@@ -62,6 +62,22 @@ machine(MachineType:Directory, "Directory protocol")
     // Fill in here all of the message buffers to/from the cache
     // Be careful of the to/from information
 
+    // Forwarding requests from the directory *to* the caches.
+    MessageBuffer *forwardToCache, network="To", virtual_network="1",
+          vnet_type="forward";
+    // Response from the directory *to* the cache.
+    MessageBuffer *responseToCache, network="To", virtual_network="2",
+          vnet_type="response";
+
+    // Requests *from* the cache to the directory
+    MessageBuffer *requestFromCache, network="From", virtual_network="0",
+          vnet_type="request";
+
+    // Responses *from* the cache to the directory
+    MessageBuffer *responseFromCache, network="From", virtual_network="2",
+          vnet_type="response";
+
+
     // Special buffer for memory requests. Kind of like the mandatory queue
     MessageBuffer *requestToMemory;
 
