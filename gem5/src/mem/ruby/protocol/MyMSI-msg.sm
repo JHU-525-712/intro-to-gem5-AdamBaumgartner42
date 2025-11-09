@@ -37,24 +37,29 @@
  * See Learning gem5 Part 3: Ruby for more details.
  */
 
+
+
+
+
+
+
+
+
+
 enumeration(CoherenceRequestType, desc="Types of request messages") {
-    // Fill this in with the possible request types
-    GetS,
-    GetM,
-    PutS,
-    PutM,
-
-
-    // Make sure to include the "Requests" from the directory to the caches on
-    // the fwd network
+    GetS;
+    GetM;
+    PutS;
+    PutM;
     Inv,        desc="Probe the cache and invalidate any matching blocks";
     PutAck,     desc="The put request has been processed.";
 }
 
+
 enumeration(CoherenceResponseType, desc="Types of response messages") {
     // Fill this in with the response types
-    Data,
-    InvAck
+    Data;
+    InvAck;
 }
 
 structure(RequestMsg, desc="Used for Cache->Dir and Fwd messages",
