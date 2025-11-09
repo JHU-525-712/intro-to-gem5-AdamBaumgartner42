@@ -386,7 +386,6 @@ machine(MachineType:L1Cache, "MSI cache")
                 Entry cache_entry := getCacheEntry(in_msg.addr);
                 TBE tbe := TBEs[in_msg.addr];
 
-                // Fill in what to do on a forward from the directory
                 if (in_msg.Type == CoherenceRequestType:GetS) {
                     // This is a special function that will trigger a
                     // transition (as defined below). It *must* have these
@@ -489,8 +488,14 @@ machine(MachineType:L1Cache, "MSI cache")
     }
 
     action(sendGetM, "gM", desc="Send GetM to the directory") {
-        // Fill this in with an enqueue on the request output port
-
+        enqueue(request_out, RequestMsg, 1) {
+            out_msg.addr := address;
+            out_msg.Type := CoherenceRequestType:GetM;
+            out_msg.Destination.add(mapAddressToMachine(address,
+                                    MachineType:Directory));
+            out_msg.MessageSize := MessageSizeType:Control;
+            out_msg.Requestor := machineID;
+        }
     }
 
     // NOTE: Clean evict. Required to keep the directory state up-to-date
@@ -578,10 +583,12 @@ machine(MachineType:L1Cache, "MSI cache")
     // Responses to CPU requests (e.g., hits and store acks)
 
     action(loadHit, "Lh", desc="Load hit") {
+        assert(is_valid(cache_entry));
         // Set this entry as the most recently used for the replacement policy
+        cacheMemory.setMRU(cache_entry);
         // Send the data back to the sequencer/CPU. NOTE: False means it was
         // not an "external hit", but hit in this local cache.
-        // Fill this in
+        sequencer.readCallback(address, cache_entry.DataBlk, false);
     }
 
     action(externalLoadHit, "xLh", desc="External load hit (was a miss)") {
@@ -622,7 +629,10 @@ machine(MachineType:L1Cache, "MSI cache")
     // Cache management actions
 
     action(allocateCacheBlock, "a", desc="Allocate a cache block") {
-        // Fill this in
+        assert(is_invalid(cache_entry));
+        assert(cacheMemory.cacheAvail(address));
+        // Create a new entry and update cache_entry to the new entry
+        set_cache_entry(cacheMemory.allocate(address, new Entry));
     }
 
     action(deallocateCacheBlock, "d", desc="Deallocate a cache block") {
@@ -633,7 +643,10 @@ machine(MachineType:L1Cache, "MSI cache")
     }
 
     action(writeDataToCache, "wd", desc="Write data to the cache") {
-        // Fill this in
+        peek(response_in, ResponseMsg) {
+            assert(is_valid(cache_entry));
+            cache_entry.DataBlk := in_msg.DataBlk;
+        }
     }
 
     action(allocateTBE, "aT", desc="Allocate TBE") {
@@ -699,9 +712,12 @@ machine(MachineType:L1Cache, "MSI cache")
         popMandatoryQueue;
     }
 
-    // transition(I, Store, IM_AD) {
-    //     // Fill this in
-    // }
+    transition(I, Store, IM_AD) {
+        allocateCacheBlock;
+        allocateTBE;
+        sendGetM;
+        popMandatoryQueue;
+    }
 
     // You can use {} to specify multiple states or events for which the
     // transition applies. For instance, below. If we are in IS_D, then on any
@@ -713,9 +729,12 @@ machine(MachineType:L1Cache, "MSI cache")
     }
 
     // Similarly, on either DataDirNoAcks or DataOwner we should go to S
-    // transition(IS_D, {DataDirNoAcks, DataOwner}, S) {
-    //     // Fill this in
-    // }
+    transition(IS_D, {DataDirNoAcks, DataOwner}, S) {
+        writeDataToCache;
+        deallocateTBE;
+        externalLoadHit;
+        popResponseQueue;
+    }
 
     transition({IM_AD, IM_A}, {Load, Store, Replacement, FwdGetS, FwdGetM}) {
         stall;
@@ -760,13 +779,16 @@ machine(MachineType:L1Cache, "MSI cache")
         sendPutS;
     }
 
-    // transition(S, Inv, I) {
-    //     // Fill this in
-    // }
+    transition(S, Inv, I) {
+        sendInvAcktoReq;
+        forwardEviction;
+        deallocateCacheBlock;
+        popForwardQueue;
+    }
 
-    // transition({SM_AD, SM_A}, {Store, Replacement, FwdGetS, FwdGetM}) {
-    //     // Fill this in
-    // }
+    transition({SM_AD, SM_A}, {Store, Replacement, FwdGetS, FwdGetM}) {
+        stall;
+    }
 
     transition(SM_AD, Inv, IM_AD) {
         sendInvAcktoReq;

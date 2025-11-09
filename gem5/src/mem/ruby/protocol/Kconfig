@@ -24,6 +24,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 config PROTOCOL
+    default "MY_MSI" if RUBY_PROTOCOL_MY_MSI
     default "GPU_VIPER" if RUBY_PROTOCOL_GPU_VIPER
     default "MOESI_AMD_Base" if RUBY_PROTOCOL_MOESI_AMD_BASE
     default "MESI_Two_Level" if RUBY_PROTOCOL_MESI_TWO_LEVEL
@@ -34,9 +35,10 @@ config PROTOCOL
     default "MOESI_CMP_token" if RUBY_PROTOCOL_MOESI_CMP_TOKEN
     default "MOESI_hammer" if RUBY_PROTOCOL_MOESI_HAMMER
     default "Garnet_standalone" if RUBY_PROTOCOL_GARNET_STANDALONE
-    default "MyMSI" if RUBY_PROTOCOL_MYMSI
 
 cont_choice "Ruby protocol"
+    config RUBY_PROTOCOL_MY_MSI
+        bool "MyMSI"
     config RUBY_PROTOCOL_GPU_VIPER
         bool "GPU VIPER"
         depends on BUILD_GPU
@@ -58,8 +60,6 @@ cont_choice "Ruby protocol"
         bool "MOESI hammer"
     config RUBY_PROTOCOL_GARNET_STANDALONE
         bool "Garnet standalone"
-    config RUBY_PROTOCOL_MYMSI
-        bool "MyMSI"
 endchoice
 
 rsource "chi/Kconfig"

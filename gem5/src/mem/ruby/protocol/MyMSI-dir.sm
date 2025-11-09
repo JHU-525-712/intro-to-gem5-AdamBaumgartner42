@@ -46,21 +46,18 @@
 
 machine(MachineType:Directory, "Directory protocol")
     :
-    // This "DirectoryMemory" is a little weird. It is initially allocated
-    // so that it *can* cover all of memory (i.e., there are pointers for
-    // every 64-byte block in memory). However, the entries are lazily
-    // created in getDirEntry()
-    DirectoryMemory * directory;
-    // You can put any parameters you want here. They will be exported as
-    // normal SimObject parameters (like in the SimObject description file)
-    // and you can set these parameters at runtime via the python config
-    // file. If there is no default here (like directory), it is mandatory
-    // to set the parameter in the python config. Otherwise, it uses the
-    // default value set here.
-    Cycles toMemLatency := 1;
-
-    // Fill in here all of the message buffers to/from the cache
-    // Be careful of the to/from information
+      // This "DirectoryMemory" is a little weird. It is initially allocated
+      // so that it *can* cover all of memory (i.e., there are pointers for
+      // every 64-byte block in memory). However, the entries are lazily
+      // created in getDirEntry()
+      DirectoryMemory * directory;
+      // You can put any parameters you want here. They will be exported as
+      // normal SimObject parameters (like in the SimObject description file)
+      // and you can set these parameters at runtime via the python config
+      // file. If there is no default here (like directory), it is mandatory
+      // to set the parameter in the python config. Otherwise, it uses the
+      // default value set here.
+      Cycles toMemLatency := 1;
 
     // Forwarding requests from the directory *to* the caches.
     MessageBuffer *forwardToCache, network="To", virtual_network="1",
@@ -76,7 +73,6 @@ machine(MachineType:Directory, "Directory protocol")
     // Responses *from* the cache to the directory
     MessageBuffer *responseFromCache, network="From", virtual_network="2",
           vnet_type="response";
-
 
     // Special buffer for memory requests. Kind of like the mandatory queue
     MessageBuffer *requestToMemory;
@@ -492,9 +488,13 @@ machine(MachineType:Directory, "Directory protocol")
         popMemQueue;
     }
 
-    // transition(S, GetM, M_m) {
-    //     // Fill this in
-    // }
+    transition(S, GetM, M_m) {
+        sendMemRead;
+        removeReqFromSharers;
+        sendInvToSharers;
+        setOwner;
+        popRequestQueue;
+    }
 
     transition({S, S_D, SS_m, S_m}, {PutSNotLast, PutMNonOwner}) {
         removeReqFromSharers;
