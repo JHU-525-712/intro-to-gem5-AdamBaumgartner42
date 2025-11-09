@@ -39,6 +39,10 @@
 
 enumeration(CoherenceRequestType, desc="Types of request messages") {
     // Fill this in with the possible request types
+    GetS,
+    GetM,
+    PutS,
+    PutM,
 
 
     // Make sure to include the "Requests" from the directory to the caches on
@@ -49,6 +53,8 @@ enumeration(CoherenceRequestType, desc="Types of request messages") {
 
 enumeration(CoherenceResponseType, desc="Types of response messages") {
     // Fill this in with the response types
+    Data,
+    InvAck
 }
 
 structure(RequestMsg, desc="Used for Cache->Dir and Fwd messages",
