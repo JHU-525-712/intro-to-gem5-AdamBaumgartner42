@@ -38,3 +38,8 @@ riscv64-linux-gnu-gcc -O2 -static -o pi_riscv compute_pi.c
 
 2. Run gem5 simulation, time: < 10 seconds
 gem5 l1_cache_riscv.py pi_riscv
+
+
+
+Other:
+x86_64-linux-gnu-gcc -pthread my_pthread_program.c -o my_pthread_program

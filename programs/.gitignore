@@ -7,3 +7,4 @@ dhrystone_arm64
 dhrystone_x86
 whetstone_arm64
 whetstone_x86
+my_pthread_program
