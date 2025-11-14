@@ -1,7 +1,7 @@
 #include <pthread.h>
 #include <stdio.h>
 
-#define NUM_THREADS 2
+#define NUM_THREADS 4
 volatile int shared_var = 0;
 
 void* simple_worker(void* arg) {
@@ -15,6 +15,7 @@ void* simple_worker(void* arg) {
         shared_var = id * 100 + i;
 
         printf("Thread %d: read %d, wrote %d\n", id, val, shared_var);
+        fflush(stdout);
     }
     return NULL;
 }
