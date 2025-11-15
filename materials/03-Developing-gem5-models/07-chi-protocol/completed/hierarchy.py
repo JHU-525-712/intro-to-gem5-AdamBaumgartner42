@@ -38,6 +38,10 @@ from gem5.components.cachehierarchies.ruby.topologies.simple_pt2pt import Simple
 
 from m5.objects import (
     RRIPRP,
+    NRURP,
+    DuelingRP,
+    DRRIPRP,
+    SHiPRP,
     RubyNetwork,
     RubyCache,
     NULL,
@@ -63,10 +67,14 @@ class SharedL2(AbstractNode):
             size=size,
             assoc=assoc,
             # Can choose any replacement policy
-            replacement_policy=RRIPRP(),
+            # replacement_policy=RRIPRP()
+            replacement_policy=
+            # replacement_policy=DRRIPRP()
+            # replacement_policy=SHiPRP()
+
         )
         # Note: As of gem5 v24.0.0.0 the replacement policy in CHI is broken.
-        # See 
+        # See
 
         # Only used for L1 controllers
         self.send_evictions = False
