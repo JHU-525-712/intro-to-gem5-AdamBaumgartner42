@@ -13,5 +13,8 @@
          "pageScale": "1",
          "pageWidth": "1160",
          "pageHeight": "440"
+    },
+    "files.associations": {
+        "stdio.h": "c"
     }
 }

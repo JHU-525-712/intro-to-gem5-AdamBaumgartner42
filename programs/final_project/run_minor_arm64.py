@@ -43,8 +43,7 @@ board = SimpleBoard(
 # 4. Workload (AArch64 SE mode)
 # ------------------------------
 binary = BinaryResource(
-    local_path="programs/final_project/hello_arm64"
-    # or just "hello_arm64" if you run gem5 from programs/final_project
+    local_path="sim_workload"
 )
 board.set_se_binary_workload(binary)
 

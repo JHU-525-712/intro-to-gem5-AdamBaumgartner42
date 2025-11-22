@@ -6,6 +6,16 @@ Use ARM SE (syscall emulation) mode with an ARMv7 core:
 
 Use a CPU model close to the Cortex-A7: MinorCPU is a good stand-in
 
-Compile your code spaces as ARMv7 Linux userspace
+### File structure
 
-gem5/build/ARM/gem5.opt -d programs/final_project/out_hello programs/final_project/run_minor_arm64.py
+
+### Compile your code spaces as ARMv7 Linux userspace
+aarch64-linux-gnu-gcc -O2 -static hello.c -o sim_workload
+
+aarch64-linux-gnu-gcc -O2 -static can_sim_1.c -o sim_workload
+
+### Update Binary Resource in run_minor_arm64.py
+binary = BinaryResource(local_path="sim_workload")
+
+### Run the project
+../../gem5/build/ARM/gem5.opt -d m6out run_minor_arm64.py
