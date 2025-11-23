@@ -1,4 +1,5 @@
 import os
+import argparse
 from gem5.components.boards.simple_board import SimpleBoard
 from gem5.components.processors.simple_processor import SimpleProcessor
 from gem5.components.processors.cpu_types import CPUTypes
@@ -6,9 +7,19 @@ from gem5.components.memory.single_channel import SingleChannelDDR3_1600
 from gem5.components.cachehierarchies.classic.private_l1_private_l2_cache_hierarchy \
     import PrivateL1PrivateL2CacheHierarchy
 from gem5.isas import ISA
-from gem5.resources.resource import Resource
-from gem5.simulate.simulator import Simulator
 from gem5.resources.resource import BinaryResource
+from gem5.simulate.simulator import Simulator
+
+# ------------------------------
+# Parse arguments passed from sweep script
+# ------------------------------
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--cpu-clock", default="1GHz")
+parser.add_argument("--l1d-size", default="32kB")
+parser.add_argument("--l1i-size", default="32kB")
+parser.add_argument("--l2-size",  default="1MB")
+args = parser.parse_args()
 
 # ------------------------------
 # 1. CPU: MinorCPU
@@ -23,9 +34,9 @@ processor = SimpleProcessor(
 # 2. Memory & caches
 # ------------------------------
 cache_hierarchy = PrivateL1PrivateL2CacheHierarchy(
-    l1d_size="32kB",
-    l1i_size="32kB",
-    l2_size="1MB",
+    l1d_size=args.l1d_size,
+    l1i_size=args.l1i_size,
+    l2_size=args.l2_size,
 )
 
 memory = SingleChannelDDR3_1600(size="2GB")
@@ -34,7 +45,7 @@ memory = SingleChannelDDR3_1600(size="2GB")
 # 3. System board
 # ------------------------------
 board = SimpleBoard(
-    clk_freq="1GHz",
+    clk_freq=args.cpu_clock,
     processor=processor,
     memory=memory,
     cache_hierarchy=cache_hierarchy,

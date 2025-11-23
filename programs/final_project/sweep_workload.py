@@ -9,9 +9,9 @@ OUT_ROOT = "arch_workload"
 
 BENCH = ("sim_workload", "can_sim_1")
 
-CPU_CLOCKS = ["600MHz", "1GHz"]
+CPU_CLOCKS = ["1GHz"]
 L1_SIZES   = ["32kB"]
-L2_SIZES   = ["256kB", "1MB"]
+L2_SIZES   = ["256kB","1MB"]
 
 STEPS_VALUES     = [10000]
 INF_WORK_VALUES  = [16]
