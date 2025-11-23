@@ -4,17 +4,24 @@ import subprocess
 import itertools
 
 GEM5   = "../../gem5/build/ARM/gem5.opt"
-CONFIG = "run_minor_arm64.py"
+#CONFIG = "run_minor_arm64.py"
+
+CONFIG = "run_minor_arm64_tutorial.py"
 OUT_ROOT = "arch_workload"
 
 BENCH = ("sim_workload", "can_sim_1")
 
 CPU_CLOCKS = ["600MHz", "1GHz"]
-L1_SIZES   = ["32kB"]
+L1_SIZES   = ["16kB","32kB","64kB"]
 L2_SIZES   = ["256kB"]
 
-STEPS_VALUES     = [10000]
-INF_WORK_VALUES  = [16]
+## What exists on STM32MP135A
+# CPU_CLOCKS = ["600MHz"]
+# L1_SIZES   = ["32kB"]
+# L2_SIZES   = ["256kB"]
+
+STEPS_VALUES     = [1000]
+INF_WORK_VALUES  = [8]
 
 def main():
     os.makedirs(OUT_ROOT, exist_ok=True)

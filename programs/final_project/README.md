@@ -10,15 +10,16 @@ Use a CPU model close to the Cortex-A7: MinorCPU is a good stand-in
 
 
 ### Compile your code spaces as ARMv7 Linux userspace
-aarch64-linux-gnu-gcc -O2 -static hello.c -o sim_workload
-
 aarch64-linux-gnu-gcc -O2 -static can_sim_1.c -o sim_workload
 
 ### Update Binary Resource in run_minor_arm64.py
 binary = BinaryResource(local_path="sim_workload")
 
-### Run the project
+### Run the project with a cache prefetcher
 ../../gem5/build/ARM/gem5.opt -d m6out run_minor_arm64.py
+
+### Run the project without a cache prefetcher
+../../gem5/build/ARM/gem5.opt -d m6out run_minor_arm64_tutorial.py
 
 ### Run the sweep
 programs/final_project# python3 sweep_workload.py
