@@ -19,3 +19,7 @@ binary = BinaryResource(local_path="sim_workload")
 
 ### Run the project
 ../../gem5/build/ARM/gem5.opt -d m6out run_minor_arm64.py
+
+### Run the sweep
+programs/final_project# python3 sweep_workload.py
+

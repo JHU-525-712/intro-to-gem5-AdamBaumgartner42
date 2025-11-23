@@ -1,3 +1,4 @@
+import os
 from gem5.components.boards.simple_board import SimpleBoard
 from gem5.components.processors.simple_processor import SimpleProcessor
 from gem5.components.processors.cpu_types import CPUTypes
@@ -42,10 +43,19 @@ board = SimpleBoard(
 # ------------------------------
 # 4. Workload (AArch64 SE mode)
 # ------------------------------
-binary = BinaryResource(
-    local_path="sim_workload"
+
+# Which binary to run
+bin_path = os.getenv(
+    "BENCH_BINARY",
+    "sim_workload",
 )
-board.set_se_binary_workload(binary)
+
+# Arguments for that binary (space-separated string)
+bench_args_str = os.getenv("BENCH_ARGS", "")
+bench_args = bench_args_str.split() if bench_args_str else []
+
+binary = BinaryResource(local_path=bin_path)
+board.set_se_binary_workload(binary, arguments=bench_args)
 
 # ------------------------------
 # 5. Run simulation

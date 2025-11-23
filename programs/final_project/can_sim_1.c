@@ -11,13 +11,31 @@
 
 #include <stdint.h>
 #include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 
 /* ===== Parameters (you can tweak these later) ===== */
 
-#define NUM_STEPS           10000   // how many outer iterations
+#define DEFAULT_NUM_STEPS           10000   // how many outer iterations
+#define DEFAULT_INF_WORK_PER_STEP   8       // how many dot products per step
+
+static int g_num_steps = DEFAULT_NUM_STEPS;
+static int g_inf_work_per_step = DEFAULT_INF_WORK_PER_STEP;
+
 #define RT_LEN              64      // size of real-time buffer
 #define INF_LEN             128     // length of inference vector
-#define INF_WORK_PER_STEP   8       // how many dot products per step
+
+/* ===== Parser for arguments ===== */
+static void parse_args(int argc, char **argv)
+{
+    for (int i = 1; i < argc; ++i) {
+        if (i + 1 < argc && strcmp(argv[i], "--steps") == 0) {
+            g_num_steps = atoi(argv[++i]);
+        } else if (i + 1 < argc && strcmp(argv[i], "--inf-work") == 0) {
+            g_inf_work_per_step = atoi(argv[++i]);
+        }
+    }
+}
 
 /* ===== Global state for RT side ===== */
 
@@ -73,11 +91,11 @@ static void rt_step(void)
 /* ===== "Inference" step =====
  *
  * Computes a dot product between weights and input.
- * Repeats it INF_WORK_PER_STEP times per outer step.
+ * Repeats it g_inf_work_per_step times per outer step.
  */
 static void inference_step(void)
 {
-    for (int rep = 0; rep < INF_WORK_PER_STEP; ++rep) {
+    for (int rep = 0; rep < g_inf_work_per_step; ++rep) {
         int64_t acc = 0;
         for (int i = 0; i < INF_LEN; ++i) {
             acc += (int32_t)inf_weights[i] * (int32_t)inf_input[i];
@@ -92,7 +110,7 @@ int main(void)
 {
     init_data();
 
-    for (int step = 0; step < NUM_STEPS; ++step) {
+    for (int step = 0; step < g_num_steps; ++step) {
         // 1) Always do the "real-time" work first.
         rt_step();
 
@@ -101,11 +119,12 @@ int main(void)
     }
 
     // Print a few values so the compiler can't optimize everything away.
-    printf("rt_sum_norm=%lld rt_sum_anom=%lld inf_acc=%lld rt_buf0=%d\n",
-           (long long)rt_sum_norm,
-           (long long)rt_sum_anom,
-           (long long)inf_accumulator,
-           rt_buf[0]);
+    printf("steps=%d inf_work=%d rt_sum_norm=%lld rt_sum_anom=%lld inf_acc=%lld rt_buf0=%d\n",
+        g_num_steps, g_inf_work_per_step,
+        (long long)rt_sum_norm,
+        (long long)rt_sum_anom,
+        (long long)inf_accumulator,
+        rt_buf[0]);
 
     return 0;
 }
