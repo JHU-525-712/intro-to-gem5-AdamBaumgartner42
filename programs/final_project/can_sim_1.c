@@ -63,28 +63,73 @@ static void init_data(void)
     }
 }
 
-/* ===== "Real-time" step =====
- *
- * Simulates processing a small buffer of sensor/CAN-like values.
- * - Updates each element with a cheap linear congruential transform.
- * - Classifies it as "normal" or "anomaly" based on parity.
- * - Accumulates some totals.
- */
+#define CAN_MSGS  128  // simulate ~128 frames per cycle
+#define CAN_MAX_DATA 64
+
+typedef struct {
+    uint32_t id;
+    uint8_t  len;
+    uint8_t  data[CAN_MAX_DATA];
+} CanFrame;
+
+/* Incoming CAN buffer */
+extern CanFrame can_ring[CAN_MSGS];
+
+/* State variables */
+static float veh_speed = 0.0f;
+static float engine_rpm = 0.0f;
+static float coolant_temp = 0.0f;
+static float brake_pressure = 0.0f;
+static uint32_t diag_frame_cnt = 0;
+
+/* ===== Realistic CAN decoding step ===== */
 static void rt_step(void)
 {
-    for (int i = 0; i < RT_LEN; ++i) {
-        int32_t x = rt_buf[i];
+    for (int i = 0; i < CAN_MSGS; ++i) {
+        const CanFrame* f = &can_ring[i];
 
-        // cheap deterministic update (no RNG needed)
-        x = (int32_t)(x * 1664525u + 1013904223u);
+        switch (f->id) {
 
-        if (x & 1) {
-            rt_sum_anom += x;
-        } else {
-            rt_sum_norm += x;
+        /* === Engine RPM: ID 0x100 === */
+        case 0x100: {
+            uint16_t raw = (f->data[0] << 8) | f->data[1];
+            engine_rpm = (float)raw * 0.125f;   // scale factor
+            break;
         }
 
-        rt_buf[i] = x;
+        /* === Vehicle speed: ID 0x120 === */
+        case 0x120: {
+            uint16_t raw = (f->data[2] << 8) | f->data[3];
+            veh_speed = (float)raw * 0.01f;     // 0.01 km/h per tick
+            break;
+        }
+
+        /* === Brake pressure: ID 0x221 === */
+        case 0x221: {
+            uint16_t raw = (f->data[0] << 8) | f->data[1];
+            brake_pressure = (float)(raw - 1000) * 0.05f;
+            break;
+        }
+
+        /* === Coolant temperature: ID 0x330 === */
+        case 0x330: {
+            int8_t raw = (int8_t)f->data[0];
+            coolant_temp = (float)raw;  // already °C
+            break;
+        }
+
+        /* === Diagnostic frame: CAN-FD style === */
+        default:
+            // do a small checksum
+            uint32_t crc = 0;
+            for (int b = 0; b < f->len; ++b)
+                crc = (crc * 31) ^ f->data[b];
+
+            if ((crc & 0xFFFF) == 0)
+                diag_frame_cnt++;
+
+            break;
+        }
     }
 }
 
