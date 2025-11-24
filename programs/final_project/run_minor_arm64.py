@@ -39,9 +39,6 @@ cache_hierarchy = PrivateL1PrivateL2CacheHierarchy(
     l2_size=args.l2_size,
 )
 
-
-
-
 memory = SingleChannelDDR3_1600(size="2GB")
 
 # ------------------------------

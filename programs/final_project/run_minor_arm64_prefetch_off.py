@@ -14,7 +14,6 @@ if this_dir not in sys.path:
 
 from caches_no_prefetch import L1ICache, L1DCache, L2Cache
 
-
 # ------------------------------
 # 1. Parse args
 # ------------------------------
@@ -24,7 +23,6 @@ parser.add_argument("--l1d-size", default="32kB")
 parser.add_argument("--l1i-size", default="32kB")
 parser.add_argument("--l2-size",  default="1MB")
 args = parser.parse_args()
-
 
 # ------------------------------
 # 2. System definition
@@ -54,6 +52,7 @@ system.cpu.createThreads()
 system.cpu.createInterruptController()
 
 
+from caches_no_prefetch import L1ICache, L1DCache, L2Cache
 # ------------------------------
 # 4. Caches
 # ------------------------------

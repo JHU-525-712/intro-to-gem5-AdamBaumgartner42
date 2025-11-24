@@ -386,7 +386,7 @@ int main(void)
         rt_step();
 
         // 2) Then burn cycles on inference-like work.
-        inference_step2();
+        inference_step1();
     }
 
     // Print a few values so the compiler can't optimize everything away.

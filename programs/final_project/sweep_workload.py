@@ -4,9 +4,11 @@ import subprocess
 import itertools
 
 GEM5   = "../../gem5/build/ARM/gem5.opt"
-#CONFIG = "run_minor_arm64.py"
 
-CONFIG = "run_minor_arm64_tutorial.py"
+# Hardware Config
+CONFIG = "run_minor_arm64.py"          # Prefetch ON
+# CONFIG = "run_minor_arm64_prefetch_off.py"  # Prefetch OFF
+
 OUT_ROOT = "arch_workload"
 
 BENCH = ("sim_workload", "can_sim_1")
